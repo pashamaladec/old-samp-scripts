@@ -4,20 +4,22 @@ tazer = renderCreateFont('Arial', 17)
 timer = renderCreateFont('Arial', 12, font_flag.BOLD)
 --ШРИФТЫ
 local sampev = require 'lib.samp.events'
-	 
+
 	 -- НАСТРОЙКИ СКРИПТА
+	 tkey = VK_Z																				-- Клавиша для смены режима тазера def. VK_Z
 	 thud = '{21ff00}Tazer{ff704d}Hud{ffffff} | ' 			-- префикс перед сообщением скрипта def. '{21ff00}Tazer{ff704d}Hud{ffffff} | '
 	 tgg = '{08ff00}*{ffffff}' 								-- зелёная звёздочка 08ff00
 	 tg = '{00a5ff}*{ffffff}' 								-- обычная звёздочка 00a5ff
 	 soff = '{ff0202}OFF' 									-- состояние худа ВЫКЛ def.	'{ff0202}OFF'
 	 son = '{19ff00}ON' 									-- состояние худа ВКЛ def. '{19ff00}ON'
 	 st = 'Tazer'											-- надпись перед ВКЛ/ВЫКЛ
-	 timeron = 1											-- вкл/выкл таймера def. 1
+	 timeron = 0											-- вкл/выкл таймера def. 1
 	 cx = 42												-- координата X осн. худа def. 42
-	 cy = 528 												-- координата Y осн. худа def. 528
+	 cy = 538 												-- координата Y осн. худа def. 528
 	 tcx = 58 												-- координата X таймера def. 58
 	 tcy = 512 												-- координата Y таймера def. 512
-	 -- !НЕ ТРОГАТЬ! -- 
+	 -- !НЕ ТРОГАТЬ! --
+	 taz = '1'
 	 state = soff 											-- изначальное состояние худа
 	 opt = 0
 	 ton = 0 												-- переменная для включения осн. худа def. 0
@@ -32,16 +34,22 @@ function main()
 	 sampRegisterChatCommand("thud", day)
 	 sampRegisterChatCommand("thelp", guide)
 	 sampRegisterChatCommand("tcoord", opt)
+	 sampRegisterChatCommand("ttimer", timeron)
 
 	 while true do
 			 wait(0)
+			 if isKeyJustPressed(tkey) and not sampIsChatInputActive() then sampSendChat('/tazer')
+			 end
 			 time=(os.date("%H",os.time())..':'..os.date("%M",os.time())..':'..os.date('%S',os.time()))
 			 if not isPauseMenuActive() and isPlayerPlaying(playerHandle) then
+			 	if timeron == 1 then
 				 renderFontDrawText(timer, time, tcx, tcy, 0xFF8c00ff, false)
+				else
 				 if rab == 1 then
 					 	renderFontDrawText(tazer, ''..st..' '..state..'', cx, cy, 0xffffffff, false)
 					end
 				end
+			end
 				 	if opt == 1 then
 				 	cux, cuy = getCursorPos()
 				 	cux = cux+15
@@ -60,7 +68,7 @@ function opt()
 		opt = 1
 		showCursor(true, true)
 		else
-			showCursor(false,false) 
+			showCursor(false,false)
 			opt = 0
 		end
 end
@@ -75,27 +83,11 @@ function sampev.onServerMessage(tclr, txt)
 		elseif txt:find('Рабочий день окончен') then
 		rab = 0
 	end
+	if txt:find('Вы поменяли пули на резиновые') then ton = 1 toff = 0 state = son
+	elseif
+		txt:find('Вы поменяли пули на обычные') then ton = 0 toff = 1 state = soff
 end
-
-function sampev.onSendCommand(cmd)
-if cmd == "/tazer" then
-	if ton == 0 and toff == 1 then
-			ton = 1
-			toff = 0
-			state = son -- вкл. тазер
-			else
-				ton = 0
-				toff = 1
-				state = soff -- выкл. тазер
-			end
-			if cmd == "/tazer" and rab == 0 then
-				ton = 0
-				toff = 1
-				state = '{ff0202}OFF'
-				sampAddChatMessage(thud..'Сначало нужно начать {8c00ff}рабочий день', -1)
-			end
-		end
-			end
+end
 
 function day()
 	if rab == 0 then
