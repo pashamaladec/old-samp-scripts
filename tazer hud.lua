@@ -12,24 +12,17 @@ function main()
 			 wait(0)
 			 if not isPauseMenuActive() and isPlayerPlaying(playerHandle) then
 				 if ton == 1 then
-					 	renderFontDrawText(font, 'Tazer {19ff00}on', 42, 528, 0xffffffff, false)
+					 	renderFontDrawText(font, 'Tazer {19ff00}on', 42, 850, 0xffffffff, false)
 					end
 					if toff == 1 then
-						renderFontDrawText(font, 'Tazer {ff704d}off', 42, 528, 0xffffffff, false)
+						renderFontDrawText(font, 'Tazer {ff704d}off', 42, 850, 0xffffffff, false)
 					end
 					end
 			 end
 			 end
 
-function sampev.onChatMessage(msg)
-	if msg == "Вам недоступна данная функция" then
-		toff = 1
-		ton = 0
-	end
-end
-
-function sampev.onSendCommand(cmd)
-if cmd == "/tazer" then
+function sampev.onSendCommand(msg)
+if msg == "/tazer" then
 	if ton == 0 and toff == 1 then
 			ton = 1
 			toff = 0
